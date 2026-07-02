@@ -2,6 +2,8 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
 import { auth } from '../firebase/firebase.init';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { terminate } from 'firebase/data-connect';
+import { Link } from 'react-router';
 
 const Register = () => {
     const [errorMessage, setErrorMessage] = useState('');
@@ -11,8 +13,12 @@ const Register = () => {
         e.preventDefault();
         const email = e.target.email.value;
         const password = e.target.password.value;
+        const terms = e.target.terms.checked;
         console.log(email, password);
-
+         if(!terms){
+            setErrorMessage('please accept terms and condition');
+            return
+         }
         if (password.length < 8) {
             setErrorMessage('Password must be at least 8 characters.');
         }
@@ -57,8 +63,12 @@ const Register = () => {
                         <button onClick={()=>setShowPassword(!showPassword)}  className='btn btn-sm absolute top-2 right-8'>{showPassword?<FaEyeSlash />:<FaEye />} </button>
                     </div>
                     <div><a className="link link-hover">Forgot password?</a></div>
+                    <label>
+                         <input name='terms' type="checkbox" className="checkbox" /> please accept terms and condition
+                    </label>
                     <button className="btn btn-neutral mt-4">Login</button>
                 </form>
+                <p>Already have an account ? please <Link className='text-blue-800 underline' to={"/login"}>Login</Link></p>
                 {
                     errorMessage && <p className='text-red-400'>{errorMessage}</p>
                 }
