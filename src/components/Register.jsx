@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import React, { useState } from 'react';
 import { auth } from '../firebase/firebase.init';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
@@ -15,10 +15,10 @@ const Register = () => {
         const password = e.target.password.value;
         const terms = e.target.terms.checked;
         console.log(email, password);
-         if(!terms){
+        if (!terms) {
             setErrorMessage('please accept terms and condition');
             return
-         }
+        }
         if (password.length < 8) {
             setErrorMessage('Password must be at least 8 characters.');
         }
@@ -42,8 +42,12 @@ const Register = () => {
         createUserWithEmailAndPassword(auth, email, password)
             .then(result => {
                 console.log(result.user);
-                setSuccess(true)
 
+                sendEmailVerification(auth.currentUser)
+                    .then(() => {
+                        setSuccess(true)
+                        alert("we sent a verification email . please check your email ")
+                    })
             })
             .catch(error => {
                 console.log(error.message);
@@ -59,12 +63,12 @@ const Register = () => {
                     <input name='email' type="email" className="input" placeholder="Email" />
                     <label className="label">Password</label>
                     <div className='relative'>
-                        <input name='password' type={showPassword?'text': 'password'} className="input" placeholder="Password" />
-                        <button onClick={()=>setShowPassword(!showPassword)}  className='btn btn-sm absolute top-2 right-8'>{showPassword?<FaEyeSlash />:<FaEye />} </button>
+                        <input name='password' type={showPassword ? 'text' : 'password'} className="input" placeholder="Password" />
+                        <button onClick={() => setShowPassword(!showPassword)} className='btn btn-sm absolute top-2 right-8'>{showPassword ? <FaEyeSlash /> : <FaEye />} </button>
                     </div>
                     <div><a className="link link-hover">Forgot password?</a></div>
                     <label>
-                         <input name='terms' type="checkbox" className="checkbox" /> please accept terms and condition
+                        <input name='terms' type="checkbox" className="checkbox" /> please accept terms and condition
                     </label>
                     <button className="btn btn-neutral mt-4">Login</button>
                 </form>
